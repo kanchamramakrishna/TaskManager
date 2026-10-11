@@ -275,10 +275,12 @@ router.get("/google/callback", async (req, res) => {
       googleConnected: true
     }));
 
-    res.redirect(`http://localhost:5173/?token=${token}&user=${userParam}`);
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    res.redirect(`${frontendUrl}/?token=${token}&user=${userParam}`);
   } catch (error) {
     console.error("Google OAuth callback error:", error);
-    res.redirect(`http://localhost:5173/?error=${encodeURIComponent("Google authentication failed")}`);
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    res.redirect(`${frontendUrl}/?error=${encodeURIComponent("Google authentication failed")}`);
   }
 });
 

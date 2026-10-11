@@ -14,6 +14,45 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// MongoDB connection helper
+let isConnected = false;
+const connectDB = async () => {
+  if (isConnected || mongoose.connection.readyState >= 1) {
+    return;
+  }
+  if (!process.env.MONGODB_URI) {
+    console.warn("Warning: MONGODB_URI environment variable is missing.");
+    return;
+  }
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    isConnected = true;
+    console.log("MongoDB connected");
+  } catch (error) {
+    console.error("MongoDB connection failed:", error);
+  }
+};
+
+// Ensure database is connected on every incoming request
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
+// Root & Health endpoints
+app.get("/", (req, res) => {
+  res.json({ status: "ok", message: "TaskManager API is running" });
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "healthy",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/calendar", calendarRoutes);
 
@@ -162,18 +201,18 @@ app.delete("/api/tasks/:id", authMiddleware, async (req, res) => {
 
 
 // ==========================
-// CONNECT TO MONGODB
+// START SERVER
 // ==========================
 
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log("MongoDB connected");
+const PORT = process.env.PORT || 5000;
 
-    app.listen(5000, () => {
-      console.log("Server running on http://localhost:5000");
+if (process.env.NODE_ENV !== "test") {
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
     });
-  })
-  .catch((error) => {
-    console.error("MongoDB connection failed:", error);
-  });
+  });
+}
+
+module.exports = app;
+

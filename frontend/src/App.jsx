@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import { API_BASE_URL } from "./config";
 
 const defaultTasks = [
   {
@@ -120,7 +121,7 @@ function App() {
     try {
 
       const response = await fetch(
-        `http://localhost:5000${endpoint}`,
+        `${API_BASE_URL}${endpoint}`,
         {
           method: "POST",
 
@@ -246,7 +247,7 @@ function App() {
       );
 
     fetch(
-      "http://localhost:5000/api/tasks",
+      `${API_BASE_URL}/api/tasks`,
       {
         headers: token
           ? {
@@ -297,7 +298,7 @@ function App() {
     setGoogleLoading(true);
     try {
       const token = localStorage.getItem("taskflowToken");
-      const response = await fetch("http://localhost:5000/api/calendar/events", {
+      const response = await fetch(`${API_BASE_URL}/api/calendar/events`, {
         headers: token
           ? {
               Authorization: `Bearer ${token}`,
@@ -333,7 +334,7 @@ function App() {
 
     try {
       const token = localStorage.getItem("taskflowToken");
-      const response = await fetch("http://localhost:5000/api/auth/google/disconnect", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/google/disconnect`, {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -353,7 +354,7 @@ function App() {
 
   const handleConnectGoogle = () => {
     const token = localStorage.getItem("taskflowToken");
-    window.location.href = `http://localhost:5000/api/auth/google?state=${token}`;
+    window.location.href = `${API_BASE_URL}/api/auth/google?state=${token}`;
   };
 
 
@@ -386,7 +387,7 @@ function App() {
         );
 
       const response = await fetch(
-        "http://localhost:5000/api/tasks",
+        `${API_BASE_URL}/api/tasks`,
         {
           method: "POST",
 
@@ -464,7 +465,7 @@ function App() {
         );
 
       const response = await fetch(
-        `http://localhost:5000/api/tasks/${task._id}`,
+        `${API_BASE_URL}/api/tasks/${task._id}`,
         {
           method: "PATCH",
 
@@ -529,8 +530,8 @@ function App() {
         );
 
       const endpoint = isGoogleEvent
-        ? `http://localhost:5000/api/calendar/events/${id}`
-        : `http://localhost:5000/api/tasks/${id}`;
+        ? `${API_BASE_URL}/api/calendar/events/${id}`
+        : `${API_BASE_URL}/api/tasks/${id}`;
 
       const response = await fetch(
         endpoint,
@@ -868,7 +869,7 @@ function App() {
             onClick={() => {
 
               window.location.href =
-                "http://localhost:5000/api/auth/google";
+                `${API_BASE_URL}/api/auth/google`;
 
             }}
           >
